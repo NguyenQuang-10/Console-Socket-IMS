@@ -1,5 +1,5 @@
 import re
-string = "!USN! username"
+string = "!USN! #fuck"
 usn_format = re.compile(r"^!USN!\s\w+$")
 check = usn_format.findall(string)
 print(check)

@@ -22,7 +22,12 @@ def is_cmd(string):
         return False
 
 
+client_dict = {}
+usn_list = []
+
+
 def handle_client(connection, address):
+    current_usn = ""
     print(f"{address[0]} has connected")
     connection.send("[CLIENT HAS CONNECTED]".encode(FORMAT))
     while True:
@@ -33,10 +38,26 @@ def handle_client(connection, address):
                 msg = connection.recv(msg_length).decode(FORMAT)
                 if is_cmd(msg):
                     if "!DIS!" in msg:
+                        client_dict.pop(connection)
+                        usn_list.remove(current_usn)
+                        print(client_dict)
+                        print(usn_list)
                         print(f"{address[0]} disconnected\n")
                         break
-                    elif "!USN! " in msg:
-                        pass  # validation of username will happen in client-side
+                    elif "!USN! " in msg:  # validation of username will happen in client-side
+                        usn = msg.replace("!USN! ", "")
+                        print("[RECIEVED USN]: " + usn)
+                        if usn in usn_list:
+                            connection.send("Fail".encode(FORMAT))
+                        else:
+                            if connection in client_dict:
+                                usn_list.remove(current_usn)
+                            client_dict[connection] = usn
+                            usn_list.append(usn)
+                            current_usn = usn
+                            print(client_dict)
+                            print(usn_list)
+                            connection.send("Succ".encode(FORMAT))
                 else:
                     print(msg)
         except ConnectionResetError:

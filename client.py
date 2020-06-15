@@ -2,7 +2,7 @@ import socket
 import re
 
 PORT = 5050
-HOST = "10.10.46.0"
+HOST = "192.168.1.17"
 ADDR = (HOST, PORT)
 HEADER = 64
 FORMAT = "utf-8"
@@ -33,17 +33,33 @@ def check_usn_format(string):
     check = usn_format.search(string)
     if check:
         return True
+    else:
+        return False
 
 
 def get_usn():
     input_usn = input("Please input your username: ")
     if check_usn_format("!USN! " + input_usn):
-        client.send(("!USN! " + input_usn).encode(FORMAT))
+        Send("!USN! " + input_usn)
     else:
         print("Username does not fit format")
     validating = True
     while validating:
-
+        cf = client.recv(2048).decode(FORMAT)
+        if cf == "Succ":
+            print("Username have successfully added/changed")
+            break
+        elif cf == "Fail": # Cant change username because function is only called at the start
+            print("Username is already being use")
+            ask_again = input("Do you want to try again? [Y/N] ")
+            if ask_again == "Y":
+                get_usn()
+                break
+            elif ask_again == "N":
+                break
+            else:
+                print("Invalid Input")
+                pass
 
 Recv()
 Send("[CLIENT HAS CONNECTED]")
