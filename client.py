@@ -2,7 +2,7 @@ import socket
 import re
 
 
-PORT = 5052
+PORT = 5050
 HEADER = 64
 HOST = "192.168.1.19"
 ADDR = (HOST, PORT)
@@ -30,7 +30,7 @@ def is_rsp(string):
         return False
 
 
-def send(msg):
+def Send(msg):
     msg_len = str(len(msg))
     b_msg_len = msg_len.encode(FORMAT)
     b_msg_len = b_msg_len + b' '*(HEADER - len(b_msg_len))
@@ -38,7 +38,7 @@ def send(msg):
     client.send(msg.encode(FORMAT))
 
 
-def recv():
+def Recv():
     msg_len = client.recv(HEADER).decode(FORMAT)
     if msg_len:
         msg = client.recv(int(msg_len)).decode(FORMAT)
@@ -49,13 +49,23 @@ def get_usn():
     input_usn = input("Please input your username: ")
     while True:
         if check_usn_format("!USN! " + input_usn):
-            send("!USN! " + input_usn)
-            break
+            Send("!USN! " + input_usn)
+            print("Sent !USN! " + input_usn)
+            validate_usn = True
+            while validate_usn:
+                rm = Recv()
+                print(rm)
+                if "!USN!" in rm:
+                    print(rm)
+                    srv_dict[rm]()  # Pycharm is dumb, it shows this when you try to call a function from a dictionary
+                    break
+                else:
+                    pass
         else:
             print("Username does not fit format")
 
 
-def fail_usn():
+def fail_usn(): # Python recognize the functions as part of the command and execute them on start
     print("Username unavailable")
     get_usn()
 
@@ -66,6 +76,4 @@ srv_dict = {
 }
 
 get_usn()
-while True:
-    rm = recv()
-
+print("TERMINATING")
