@@ -1,0 +1,19 @@
+MANDATORY:
+
+implement on-start username function -X
+implement disconnect function -X
+implement get available users command
+implement command to connect to other users
+implement server-side function to send message to target user
+threading for client
+check for command and command format in input string the give error
+
+UNNECESSARY:
+
+implement change name command
+exception handling
+
+
+DONE:
+
+implement feature that display cli_list and usn_list after each command

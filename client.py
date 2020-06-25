@@ -4,9 +4,12 @@ import re
 
 PORT = 5050
 HEADER = 64
-HOST = "10.10.36.246"
+HOST = "192.168.1.19"
 ADDR = (HOST, PORT)
 FORMAT = "utf-8"
+USN_TAG = "!USN!"
+FAIL_BOOL = " FAIL"
+SUCC_BOOL= " SUCC"
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
@@ -23,6 +26,15 @@ def check_usn_format(string):
 
 def is_rsp(string):
     find_cmd_stc = re.compile(r'^![A-Z]+!\s[A-Z]+')
+    find = find_cmd_stc.search(string)
+    if find:
+        return True
+    else:
+        return False
+
+
+def is_cmd(string):
+    find_cmd_stc = re.compile(r'^![A-Z]+!')
     find = find_cmd_stc.search(string)
     if find:
         return True
@@ -55,24 +67,38 @@ def get_usn():
             while validate_usn:
                 rm = Recv()
                 print(rm)
-                if "!USN!" in rm:
-                    print(rm)  # Pycharm is dumb, it shows this when you try to call a function from a dictionary
-                    srv_dict[rm]
+                if rm == USN_TAG + SUCC_BOOL:
+                    print(rm)
+                    print("Username created/changed")
                     break
+                elif rm == USN_TAG + FAIL_BOOL:
+                    print("Username unavailable")
+                    get_usn()
             break
         else:
             print("Username does not fit format")
 
 
-srv_dict = {
-    "!USN! SUCC": print("cunt"),
-    "lmao": print("fuck"),
-}
+def disconnect():
+    Send('!DIS!')
+    print("Exiting...")
+    client.close()
+    exit()
 
-def fail_usn(): # Python recognize the functions as part of the command and execute them on start
-    print("Username unavailable")
-    get_usn()
+
+def handle_input():
+    user_input = input()
+    if is_cmd(user_input):
+        if user_input == "!DIS!":
+            disconnect()
+        if user_input == USN_TAG:
+            get_usn()
 
 
 get_usn()
-print("TERMINATING")
+""" Exist as debug only
+    Will exist as threads in the future
+"""
+while True:
+    handle_input()
+

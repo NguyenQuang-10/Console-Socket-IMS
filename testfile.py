@@ -1,7 +1,6 @@
-def func2():
-    print("Something")
+def zero():
+    dic = {
+        "a": exit()
+    }
 
-dict = {
-    "Func1": print("Something"),
-    "Func2": func2()
-}
+zero()
