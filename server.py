@@ -56,6 +56,7 @@ def Recv(conn):
 
 
 def val_usn(usn_msg, conn):
+    print("Validating Username")
     usn = usn_msg.replace(USN_TAG + " ", "")
     print(usn)
     if conn not in cli_list or usn not in usn_list:
@@ -81,7 +82,7 @@ def handle_client(conn, addr):
         if is_rsq(rm):
             cmd = find_cmd(rm)
             print(cmd)
-            cmd_dict[cmd](rm, conn)
+            # cmd_dict[cmd](rm, conn)
 
 
 def start():

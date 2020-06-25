@@ -4,7 +4,7 @@ import re
 
 PORT = 5050
 HEADER = 64
-HOST = "192.168.1.19"
+HOST = "10.10.36.246"
 ADDR = (HOST, PORT)
 FORMAT = "utf-8"
 
@@ -56,24 +56,23 @@ def get_usn():
                 rm = Recv()
                 print(rm)
                 if "!USN!" in rm:
-                    print(rm)
-                    srv_dict[rm]()  # Pycharm is dumb, it shows this when you try to call a function from a dictionary
+                    print(rm)  # Pycharm is dumb, it shows this when you try to call a function from a dictionary
+                    srv_dict[rm]
                     break
-                else:
-                    pass
+            break
         else:
             print("Username does not fit format")
 
+
+srv_dict = {
+    "!USN! SUCC": print("cunt"),
+    "lmao": print("fuck"),
+}
 
 def fail_usn(): # Python recognize the functions as part of the command and execute them on start
     print("Username unavailable")
     get_usn()
 
-
-srv_dict = {
-    "!USN! SUCC": print("Successfully added Username"),
-    "!USN! FAIL": fail_usn(),
-}
 
 get_usn()
 print("TERMINATING")
