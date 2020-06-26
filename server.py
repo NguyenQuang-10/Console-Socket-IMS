@@ -9,6 +9,7 @@ HOST = socket.gethostbyname(socket.gethostname())
 ADDR = (HOST, PORT)
 FORMAT = "utf-8"
 USN_TAG = "!USN!"
+CON_TAG = "!CON!"
 FAIL_BOOL = " FAIL"
 SUCC_BOOL= " SUCC"
 
@@ -85,6 +86,7 @@ def list_global_var():  # handle command from server
 def handle_client(conn, addr):
     print(f"{addr} connected")
 
+    target = ""
     cli_usn = ""
 
     while True:
@@ -100,11 +102,26 @@ def handle_client(conn, addr):
                     cli_usn = val_usn(rm, conn)  # Client have username already
                 else:
                     cli_usn = val_usn(rm, conn)
-            if cmd == "!DIS!":
+            elif cmd == "!DIS!":
                 rmv_usr(cli_usn, conn)
                 print(f"User {cli_usn} has disconnected")
                 list_global_var()
                 break
+            elif cmd == "!ONL!":
+                usn_str = ""
+                for usn in usn_list:
+                    if usn != cli_usn:
+                        usn_str += usn + "\n"
+                Send(("!ONL! "+ usn_str), conn)
+            elif cmd == CON_TAG:
+                rcv_trg = rm.replace(CON_TAG + " ", "")
+                if rcv_trg in usn_list and rcv_trg != cli_usn:
+                    target = rcv_trg
+                    Send(CON_TAG + SUCC_BOOL, conn)
+                    print(f"Connected to {target}")
+                else:
+                    Send(CON_TAG + FAIL_BOOL, conn)
+
             list_global_var()
     conn.close()
 
