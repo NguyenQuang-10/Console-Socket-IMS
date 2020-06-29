@@ -3,7 +3,7 @@ import threading
 import re
 
 # CONSTANTS
-PORT = 5050
+PORT = 5055
 HEADER = 64
 HOST = socket.gethostbyname(socket.gethostname())
 ADDR = (HOST, PORT)
@@ -12,10 +12,15 @@ USN_TAG = "!USN!"
 CON_TAG = "!CON!"
 FAIL_BOOL = " FAIL"
 SUCC_BOOL= " SUCC"
+MSG_TAG = "!MSG!"
 
 # UNIVERSAL VARIABLES
 usn_dict = {}
 usn_list = []
+
+sending_rsp = {
+
+}
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
@@ -41,11 +46,13 @@ def find_cmd(string):
 
 
 def Send(msg, conn):
+    sending_rsp[conn] = True
     msg_len = str(len(msg))
     b_msg_len = msg_len.encode(FORMAT)
     b_msg_len = b_msg_len + b' '*(HEADER - len(b_msg_len))
     conn.send(b_msg_len)
     conn.send(msg.encode(FORMAT))
+    sending_rsp[conn] = False
 
 
 def Recv(conn):
@@ -59,6 +66,8 @@ def Recv(conn):
 """Note:
     Changing username to old/existed username is possible and is not prevented
 """
+
+
 def val_usn(usn_msg, conn):
     print("Validating Username")
     usn = usn_msg.replace(USN_TAG + " ", "")
@@ -84,6 +93,8 @@ def list_global_var():  # handle command from server
 
 
 def handle_client(conn, addr):
+    sending_rsp[conn] = False
+
     print(f"{addr} connected")
 
     target = ""
@@ -121,7 +132,14 @@ def handle_client(conn, addr):
                     print(f"Connected to {target}")
                 else:
                     Send(CON_TAG + FAIL_BOOL, conn)
-
+            elif cmd == MSG_TAG:
+                msg = rm.replace(MSG_TAG + " ", "")
+                if target:
+                    target_cli = usn_dict[target]
+                    while True:
+                        if not sending_rsp[usn_dict[target]]:
+                            Send(MSG_TAG + " " + f"\"{cli_usn}: {msg}\"", target_cli)
+                            break
             list_global_var()
     conn.close()
 

@@ -1,6 +1,2 @@
-def zero():
-    dic = {
-        "a": exit()
-    }
-
-zero()
+str = "cunt"
+print(type(str))
