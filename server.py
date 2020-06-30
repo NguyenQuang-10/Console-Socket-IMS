@@ -58,10 +58,14 @@ def Send(msg, conn):
 
 
 def Recv(conn):
-    msg_len = conn.recv(HEADER).decode(FORMAT)
-    if msg_len:
-        msg = conn.recv(int(msg_len)).decode(FORMAT)
-        return msg
+    try:
+        msg_len = conn.recv(HEADER).decode(FORMAT)
+        if msg_len:
+            msg = conn.recv(int(msg_len)).decode(FORMAT)
+            return msg
+    except ConnectionResetError:
+        print("User disconnected")
+        rmv_usr()
 
 
 # Handle username requests

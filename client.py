@@ -5,7 +5,7 @@ import time
 
 PORT = 5055
 HEADER = 64
-HOST = "10.10.28.246"
+HOST = "192.168.1.19"
 ADDR = (HOST, PORT)
 FORMAT = "utf-8"
 USN_TAG = "!USN!"
@@ -82,20 +82,6 @@ def Recv():
             exit()
 
 
-
-    # while True:
-    #     try:
-    #         msg_len = client.recv(HEADER).decode(FORMAT)
-    #         if msg_len:
-    #             msg = client.recv(int(msg_len)).decode(FORMAT)
-    #             return msg
-    #     except socket.timeout:
-    #         pass
-    #     except ValueError:
-    #         print("Value Error")
-    #         pass
-
-
 # Add script to add non-rsp to a list and reprint later
 def processing(tag, s_bool=None, f_bool=None):
     while True:
@@ -116,17 +102,7 @@ def processing(tag, s_bool=None, f_bool=None):
                             return msg
                         else:
                             return "No user online\n"
-    # while True:
-    #     rsp = Recv()
-    #     if rsp:
-    #         print(f'[RECV MSG] {rsp}')  # Delete after debug
-    #         if (s_bool is not None) and (f_bool is not None):
-    #             if rsp == tag + s_bool:
-    #                 return True
-    #             elif rsp == tag + f_bool:
-    #                 return False
-    #         elif tag in rsp:
-    #             return rsp.replace(tag + " ", "")
+
 
 def change_usn():
     input_usn = input("Please input your username: ")
@@ -139,6 +115,7 @@ def change_usn():
             print("Username unavailable")
     else:
         print("Username does not fit format")
+
 
 def get_usn():
     input_usn = input("Please input your username: ")
@@ -219,8 +196,8 @@ def handle_input():
         elif not target_selected:
             print("Target not selected")
 
-get_usn()
 
+get_usn()
 if __name__ == '__main__':
     threading.Thread(target=handle_msg).start()
     threading.Thread(target=handle_input).start()
