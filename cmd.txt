@@ -1,7 +1,0 @@
-cmd structure: !<command>!
-!USN!: change username -!!!
-!ONL!: view available client's username -!!1
-!SEL!: view self stat
-!DIS!: Disconnect manually -!!!
-
--!!!: High priority
