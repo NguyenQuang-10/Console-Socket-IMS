@@ -47,11 +47,13 @@ def find_cmd(string):
 
 def Send(msg, conn):
     sending_rsp[conn] = True
-    msg_len = str(len(msg))
-    b_msg_len = msg_len.encode(FORMAT)
-    b_msg_len = b_msg_len + b' '*(HEADER - len(b_msg_len))
-    conn.send(b_msg_len)
-    conn.send(msg.encode(FORMAT))
+    for i in range(0,1):
+        msg_len = str(len(msg))
+        b_msg_len = msg_len.encode(FORMAT)
+        b_msg_len = b_msg_len + b' '*(HEADER - len(b_msg_len))
+        conn.send(b_msg_len)
+        conn.send(msg.encode(FORMAT))
+        print(f"Sent {msg}")
     sending_rsp[conn] = False
 
 
@@ -123,7 +125,7 @@ def handle_client(conn, addr):
                 for usn in usn_list:
                     if usn != cli_usn:
                         usn_str += usn + "\n"
-                Send(("!ONL! "+ usn_str), conn)
+                Send(("!ONL! " + usn_str), conn)
             elif cmd == CON_TAG:
                 rcv_trg = rm.replace(CON_TAG + " ", "")
                 if rcv_trg in usn_list and rcv_trg != cli_usn:
@@ -134,12 +136,15 @@ def handle_client(conn, addr):
                     Send(CON_TAG + FAIL_BOOL, conn)
             elif cmd == MSG_TAG:
                 msg = rm.replace(MSG_TAG + " ", "")
-                if target:
-                    target_cli = usn_dict[target]
-                    while True:
-                        if not sending_rsp[usn_dict[target]]:
-                            Send(MSG_TAG + " " + f"\"{cli_usn}: {msg}\"", target_cli)
-                            break
+                try:
+                    if target:
+                        target_cli = usn_dict[target]
+                        while True:
+                            if not sending_rsp[usn_dict[target]]:
+                                Send(MSG_TAG + " " + f"\"{cli_usn}: {msg}\"", target_cli)
+                                break
+                except KeyError:
+                    Send(MSG_TAG + " Targeted user have disconnected, changed name, or don't exist", conn)
             list_global_var()
     conn.close()
 

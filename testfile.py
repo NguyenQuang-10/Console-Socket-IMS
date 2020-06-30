@@ -1,2 +1,2 @@
-str = "cunt"
-print(type(str))
+for i in range(0,2):
+    print(i)
